@@ -39,18 +39,22 @@ func readEbcdicHeader(file string) (string, error) {
     
     nb, err := f.Read(buffer)
 
-    if err != nil {
+    if err != nil || nb != 3200 {
         log.Fatal(err)
     }
     f.Close()
-
-    fmt.Printf("Just read %d bytes.\nThe EBCDIC header for %s is the following:\n", nb, file) 
 
     return ebcdicToUtf8(buffer)
 }
 
 func main(){
-    file := "hdr1.sgy"
+    args := os.Args
+    if len(args) < 2 {
+        fmt.Println("Append a segy file path to the command to print the EBCDIC header.")
+        return
+    }
+
+    file := args[1]
     header, err := readEbcdicHeader(file)
     if err != nil {
         return
